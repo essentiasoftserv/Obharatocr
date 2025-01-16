@@ -28,10 +28,10 @@ def extract_names(input_text):
     match_name = re.search(regex_name, input_text, re.IGNORECASE)
     if match_name:
         name_parts = match_name.group(1).split()
-        
+
         # Define a set of unwanted suffixes and non-last-name words
-       unwanted_suffixes = {"Son", "Daughter", "Wife", "verncie", "Other"}
-        
+        unwanted_suffixes = {"Son", "Daughter", "Wife", "verncie", "Other"}
+
         # Filter out unwanted suffixes if they appear at the end of the name
         while name_parts and name_parts[-1] in unwanted_suffixes:
             name_parts.pop()
@@ -39,22 +39,22 @@ def extract_names(input_text):
         # Ensure the final name has only first, middle, and last name components
         if len(name_parts) > 3:
             name_parts = name_parts[:3]
-            
+
         name = " ".join(name_parts)
     else:
         name = ""
-    
+
     # Additional regex checks for SWD if not found
     if not swd:
         regex_swd = r"NAME\s*:?\s*([A-Z]+\s[A-Z.]+\s[A-Z.]+|[A-Z]+\s[A-Z.]+)"
         match_swd = re.findall(regex_swd, input_text, re.IGNORECASE)
         if len(match_swd) > 1:
             swd_parts = match_swd[1].split()
-            
+
             # Remove any unwanted suffixes if present
             while swd_parts and swd_parts[-1] in unwanted_suffixes:
                 swd_parts.pop()
-            
+
             # Keep only the first three parts as the valid SWD information
             swd = " ".join(swd_parts[:3])
     # Final fallback for SWD extraction
@@ -62,7 +62,7 @@ def extract_names(input_text):
         regex_swd = r"OF\s*:?\s*[S/O01]*\s*\n([A-Z]+\s[A-Z]+)"
         match = re.search(regex_swd, input_text, re.IGNORECASE)
         swd = match.group(1) if match else ""
-    
+
     return name, swd
 
 
@@ -121,10 +121,11 @@ def extract_fuel_type(input):
     # Regular expression to match specific fuel types directly
     regex = r"\b(diesel|petrol|electric)\b"
     match = re.search(regex, input_text, re.IGNORECASE)
-    
+
     # If a match is found, return the fuel type with standardized capitalization
     fuel_type = match.group(1).capitalize() if match else ""
     return fuel_type
+
 
 def extract_vehicle_class(input):
     """
@@ -241,18 +242,18 @@ def extract_address(input):
     regex = r"Address:?\s*((?:.|\n)*?\d{6})"
     match = re.search(regex, input, re.IGNORECASE)
     if match:
-        address = match.group(1).replace('\n', ' ')
-    
+        address = match.group(1).replace("\n", " ")
+
         # Remove unwanted phrases
         unwanted_phrases = ["Emission Norms", "Not Available"]
         for phrase in unwanted_phrases:
-            address = re.sub(r'\b' + re.escape(phrase) + r'\b', '', address)
-    
+            address = re.sub(r"\b" + re.escape(phrase) + r"\b", "", address)
+
         # Remove extra spaces introduced by removals
-        address = re.sub(r'\s+', ' ', address).strip()
+        address = re.sub(r"\s+", " ", address).strip()
     else:
         address = ""
-    #address = match.group(1).replace('\n', ' ') if match else ""
+    # address = match.group(1).replace('\n', ' ') if match else ""
 
     return address
 
